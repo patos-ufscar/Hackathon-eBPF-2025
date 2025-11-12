@@ -42,7 +42,7 @@ const volatile u64 slice_ns = 10000ULL;
 
 s32 BPF_STRUCT_OPS(kube_select_cpu, struct task_struct *p, s32 prev_cpu, u64 wake flags)
 {
-    scx_bpf_dsq_insert_vtime(p, prev_cpu, p->scx.dsq_vtime, SCX_DSQ_INSERT_TAIL);
+    scx_bpf_dsq_insert_vtime(p, prev_cpu, slice_ns, p->scx.dsq_vtime, SCX_DSQ_INSERT_TAIL);
 
     return -1;
 }

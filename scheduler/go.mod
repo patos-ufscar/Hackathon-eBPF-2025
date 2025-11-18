@@ -1,4 +1,4 @@
-module k8s-sched
+module scheduler-cli
 
 go 1.25.3
 

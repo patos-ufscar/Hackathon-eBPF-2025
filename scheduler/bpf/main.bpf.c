@@ -1,3 +1,4 @@
+//go:build ignore
 #include <scx/common.bpf.h>
 #include "intf.h"
 
@@ -12,8 +13,8 @@ struct {
     __uint(type, BPF_MAP_TYPE_HASH);
     __uint(max_entries, 10);
     __type(key, u64);   // cgroup id
-    __type(value, u64); // ?
-} priority_container SEC(".maps");
+    __type(value, u64); // value (e.g., stored PID or flag)
+} high_prio_cgroups SEC(".maps");
 
 UEI_DEFINE(uei);
 

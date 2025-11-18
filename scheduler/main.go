@@ -20,13 +20,12 @@ import (
 	"github.com/cilium/ebpf"
 )
 
-// BPF map to store the PIDs that will be prioritized
-// Kernelspace code will create this
-// for testing use
-// sudo bpftool map create /sys/fs/bpf/priority_pids type hash key 4 value 4 entries 1024 name priority_pids
-// to create the map
+// BPF map to store cgroup IDs that will be prioritized.
+// Kernelspace code expects a map keyed by the cgroup ID (u64).
+// For testing you can create a map with 8-byte key and value, for example:
+// sudo bpftool map create /sys/fs/bpf/priority_pids type hash key 8 value 8 entries 1024 name priority_pids
 // sudo bpftool map dump pinned /sys/fs/bpf/priority_pids
-// to inspect the map
+// Note: the kernel BPF program in `bpf/main.bpf.c` looks up the map by cgroup id.
 const bpfMapPath = "/sys/fs/bpf/priority_pids"
 
 const containerdSocket = "/run/containerd/containerd.sock"
@@ -244,8 +243,11 @@ func writePIDToMap(pid uint32, cgroup string) error {
 	if err != nil {
 		return fmt.Errorf("failed to get cgroup ID: %w", err)
 	}
+	fmt.Printf("Writing to map: CgroupID %d -> PID %d\n", cgroupId, pid)
 
-	fmt.Printf("Writing to map: PID %d -> CgroupID %d\n", pid, cgroupId)
+	// Map in BPF expects key=uint64 (cgroup id) and value=uint64 (pid or flag)
+	key := cgroupId
+	val := uint64(pid)
 
 	priorityMap, err := ebpf.LoadPinnedMap(bpfMapPath, nil)
 	if err != nil {
@@ -253,8 +255,8 @@ func writePIDToMap(pid uint32, cgroup string) error {
 	}
 	defer priorityMap.Close()
 
-	if err := priorityMap.Put(pid, cgroupId); err != nil {
-		return fmt.Errorf("putting PID in map: %w", err)
+	if err := priorityMap.Put(key, val); err != nil {
+		return fmt.Errorf("putting cgroup id in map: %w", err)
 	}
 
 	return nil

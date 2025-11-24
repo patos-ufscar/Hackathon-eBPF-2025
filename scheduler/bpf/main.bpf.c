@@ -41,9 +41,9 @@ const volatile u64 slice_ns = 10000ULL;
 #define NORMAL_PRIORITY 1024
 #define HIGH_PRIORITY 4096
 
-s32 BPF_STRUCT_OPS(kube_select_cpu, struct task_struct *p, s32 prev_cpu, u64 wake flags)
+s32 BPF_STRUCT_OPS(kube_select_cpu, struct task_struct *p, s32 prev_cpu, u64 wake_flags)
 {
-    scx_bpf_dsq_insert_vtime(p, prev_cpu, slice_ns, p->scx.dsq_vtime, SCX_DSQ_INSERT_TAIL);
+    scx_bpf_dsq_insert_vtime(p, prev_cpu, slice_ns, p->scx.dsq_vtime, 0);
 
     return -1;
 }
@@ -51,9 +51,9 @@ s32 BPF_STRUCT_OPS(kube_select_cpu, struct task_struct *p, s32 prev_cpu, u64 wak
 void BPF_STRUCT_OPS(kube_enqueue, struct task_struct *p, u64 enq_flags)
 {
     // pretty random, no?
-    cpu = (bpf_get_prandom_u32() % nr_cpus);
+    s32 cpu = (bpf_get_prandom_u32() % nr_cpus);
 
-    scx_bpf_dsq_insert_vtime(p, cpu, p->scx.dsq_vtime, SCX_DSQ_INSERT_TAIL);
+    scx_bpf_dsq_insert_vtime(p, cpu, p->scx.dsq_vtime, 0);
 }
 
 void BPF_STRUCT_OPS(kube_dispatch, s32 cpu, struct task_struct *prev)
@@ -66,7 +66,7 @@ void BPF_STRUCT_OPS(kube_running, struct task_struct *p)
     
 }
 
-void BPF_STRUCT_OPS(kube_stopping, struct task_struct *p)
+void BPF_STRUCT_OPS(kube_stopping, struct task_struct *p, bool runnable)
 {
     // isso aqui da merda com tempo constante, concertar!
     u64 delta_exec = slice_ns - p->scx.slice;
@@ -78,7 +78,7 @@ void BPF_STRUCT_OPS(kube_stopping, struct task_struct *p)
     if (bpf_map_lookup_elem(&high_prio_cgroups, &cgroup_id) != NULL)
         peso_da_tarefa = HIGH_PRIORITY;
 
-    u64 delta_vruntime = delta_exec * PESO_NORMAL / peso_da_tarefa;
+    u64 delta_vruntime = delta_exec * NORMAL_PRIORITY / peso_da_tarefa;
     p->scx.dsq_vtime += delta_vruntime;
 }
 
@@ -90,6 +90,7 @@ void BPF_STRUCT_OPS(kube_enable, struct task_struct *p)
 s32 BPF_STRUCT_OPS(kube_init)
 {
     int err;
+    s32 cpu;
 
     nr_cpu_ids = scx_bpf_nr_cpu_ids();
 

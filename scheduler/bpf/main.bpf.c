@@ -51,7 +51,7 @@ s32 BPF_STRUCT_OPS(kube_select_cpu, struct task_struct *p, s32 prev_cpu, u64 wak
 void BPF_STRUCT_OPS(kube_enqueue, struct task_struct *p, u64 enq_flags)
 {
     // pretty random, no?
-    s32 cpu = (bpf_get_prandom_u32() % nr_cpus);
+    s32 cpu = (bpf_get_prandom_u32() % nr_cpu_ids);
 
     scx_bpf_dsq_insert_vtime(p, cpu, p->scx.dsq_vtime, 0);
 }

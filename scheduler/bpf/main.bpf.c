@@ -119,7 +119,7 @@ void BPF_STRUCT_OPS(kube_enable, struct task_struct *p)
         p->scx.dsq_vtime = vtime_now - slice_ns;
 }
 
-s32 BPF_STRUCT_OPS(kube_init)
+s32 BPF_STRUCT_OPS_SLEEPABLE(kube_init)
 {
     int err;
     s32 cpu;

@@ -2,6 +2,8 @@
 #include <scx/common.bpf.h>
 #include "intf.h"
 
+char _license[] SEC("license") = "GPL";
+
 /*
  mapa quearmazena os pids dos processos que estão
  rodando dentro do container que queremos priorizar.

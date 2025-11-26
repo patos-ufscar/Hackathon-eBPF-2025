@@ -55,6 +55,8 @@ const volatile u64 slice_ns = 10000000ULL;
 #define NORMAL_PRIORITY 1024
 #define HIGH_PRIORITY 4096
 
+#define SHARED_DSQ_ID 1025
+
 static __always_inline struct task_ctx *lookup_task_ctx(struct task_struct *p)
 {
     // Tenta pegar o storage existente. Se não existir, CRIA um novo zerado.
@@ -63,21 +65,17 @@ static __always_inline struct task_ctx *lookup_task_ctx(struct task_struct *p)
 
 s32 BPF_STRUCT_OPS(kube_select_cpu, struct task_struct *p, s32 prev_cpu, u64 wake_flags)
 {
-    // scx_bpf_dsq_insert_vtime(p, prev_cpu, slice_ns, p->scx.dsq_vtime, 0);
-
     return prev_cpu;
 }
 
 void BPF_STRUCT_OPS(kube_enqueue, struct task_struct *p, u64 enq_flags)
 {
-    s32 cpu = scx_bpf_task_cpu(p);
-
-    scx_bpf_dsq_insert_vtime(p, cpu, slice_ns, p->scx.dsq_vtime, 0);
+    scx_bpf_dsq_insert_vtime(p, SHARED_DSQ_ID, slice_ns, p->scx.dsq_vtime, 0);
 }
 
 void BPF_STRUCT_OPS(kube_dispatch, s32 cpu, struct task_struct *prev)
 {
-    scx_bpf_dsq_move_to_local(cpu);
+    scx_bpf_dsq_move_to_local(SHARED_DSQ_ID);
 }
 
 void BPF_STRUCT_OPS(kube_running, struct task_struct *p)
@@ -121,21 +119,9 @@ void BPF_STRUCT_OPS(kube_enable, struct task_struct *p)
 
 s32 BPF_STRUCT_OPS_SLEEPABLE(kube_init)
 {
-    int err;
-    s32 cpu;
-
     nr_cpu_ids = scx_bpf_nr_cpu_ids();
 
-    // Create DSQ per CPU
-    bpf_for(cpu, 0, nr_cpu_ids) {
-        err = scx_bpf_create_dsq(cpu, cpu);
-        if (err) {
-            scx_bpf_error("Failed to create DSQ for CPU %d: %d", cpu, err);
-            return err;
-        }
-    }
-
-    return 0;
+    return scx_bpf_create_dsq(SHARED_DSQ_ID, -1);
 }
 
 void BPF_STRUCT_OPS(kube_exit, struct scx_exit_info *ei)

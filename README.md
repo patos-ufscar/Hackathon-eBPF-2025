@@ -10,6 +10,8 @@ Our team for this Hackathon consisted of 3 members of PATOS.
 * Lucas Cardoso
 * Oliver Miyar Ugarte
 
+![Team Members](https://github.com/patos-ufscar/Hackathon-eBPF-2025/blob/main/images/theTeam.jpeg)
+
 ## Overview
 Our **eBPF Scheduler** levereges **eBPF** and **sched_ext** to prioritize Kubernetes cgroups by their **PID** with a simple TUI. This project provides a proof of concept of eBPF's use for creating custom Schedulers and its potential use for allocating priority and cpu resources to the desired kubernetes cgroup.
 

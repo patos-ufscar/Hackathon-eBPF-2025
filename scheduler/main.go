@@ -28,7 +28,7 @@ import (
 // Note: the kernel BPF program in `bpf/main.bpf.c` looks up the map by cgroup id.
 const bpfMapPath = "/sys/fs/bpf/priority_pids"
 
-const containerdSocket = "/run/containerd/containerd.sock"
+const containerdSocket = "/run/k3s/containerd/containerd.sock"
 
 type KubeContainer struct {
 	PodName       string
@@ -43,14 +43,14 @@ func main() {
 		log.Fatalf("Failed to create Kubernetes clientset: %v", err)
 	}
 
-	/* nodeName := os.Getenv("NODE_NAME")
+	nodeName := os.Getenv("NODE_NAME")
 	if nodeName == "" {
 		nodeName, _ = os.Hostname()
 		log.Printf("NODE_NAME env var not set, falling back to hostname: %s", nodeName)
-	} */
+	}
 
 	// For single-node testing
-	nodeName := "minikube"
+	//nodeName := "minikube"
 
 	runningContainers, err := getLocalContainers(ctx, clientset, nodeName)
 	if err != nil {
@@ -68,12 +68,13 @@ func main() {
 	log.Printf("You selected: Pod=%s, Container=%s", selectedContainer.PodName, selectedContainer.ContainerName)
 
 	// Containerd setup
-	/* log.Printf("Connecting to containerd to find PID")
-	pid, err := getPIDFromContainerd(ctx, selectedContainer.ContainerID) */
+	log.Printf("Connecting to containerd to find PID")
+	pid, err := getPIDFromContainerd(ctx, selectedContainer.ContainerID)
 
-	// Docker setup
-	log.Printf("Connecting to docker to find PID")
-	pid, err := getPIDFromDocker(ctx, selectedContainer.ContainerID)
+	// Docker setup, used for testing with minikube
+	// log.Printf("Connecting to docker to find PID")
+	// pid, err := getPIDFromDocker(ctx, selectedContainer.ContainerID)
+
 	if err != nil {
 		log.Fatalf("Failed to get PID: %v", err)
 	}
@@ -171,7 +172,7 @@ func selectContainer(runningContainers []KubeContainer) (KubeContainer, error) {
 	return containerMap[selectedDisplay], nil
 }
 
-// Function for kubernetes setup using containerd
+// Function for kubernetes setup using containerd (k3s)
 func getPIDFromContainerd(ctx context.Context, containerId string) (uint32, error) {
 	id := strings.TrimPrefix(containerId, "containerd://")
 	client, err := containerd.New(containerdSocket, containerd.WithDefaultNamespace("k8s.io"))

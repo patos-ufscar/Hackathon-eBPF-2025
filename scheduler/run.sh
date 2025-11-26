@@ -2,7 +2,7 @@ if [ "$1" == "compile" ]; then
     go build -o scheduler-cli
     exit 0
 fi
-
+# automate testing with minikube
 if [ "$1" == "test-vm" ]; then
     GOOS=linux GOARCH=amd64 go build -o scheduler-cli
     minikube cp ./scheduler-cli /home/docker/scheduler-cli
@@ -14,6 +14,5 @@ if [ "$1" == "test-vm" ]; then
     exit 0
 fi
 
-sudo mkdir -p /root/.kube
-sudo ln -s $HOME/.kube/config /root/.kube/config
-sudo ./scheduler-cli
+GOOS=linux GOARCH=amd64 go build -o scheduler-cli
+sudo KUBECONFIG=/etc/rancher/k3s/k3s.yaml ./scheduler-cli

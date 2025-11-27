@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stress-noise
+spec:
+  replicas: 1 
+  selector:
+    matchLabels:
+      app: stress-noise
+  template:
+    metadata:
+      labels:
+        app: stress-noise
+    spec:
+      containers:
+      - name: stress-ng
+        image: alpine:latest
+        command: ["/bin/sh", "-c"]
+        args:
+          - apk add --no-cache stress-ng && 
+            stress-ng --cpu 6 --timeout 0
+        resources:
+          requests:
+            cpu: "500m" 
+            memory: "64Mi"

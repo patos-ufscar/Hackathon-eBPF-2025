@@ -15,11 +15,17 @@
 
 static volatile bool exiting = false;
 
-// Função para imprimir logs detalhados da libbpf (útil se der erro no kernel)
+/*
+ * libbpf_print_fn() - Callback for libbpf debug logging.
+ * Useful for diagnosing kernel-side verifier errors.
+ */
 static int libbpf_print_fn(enum libbpf_print_level level, const char *format, va_list args) {
     return vfprintf(stderr, format, args);
 }
 
+/*
+ * sig_handler() - Signal handler for graceful shutdown.
+ */
 static void sig_handler(int sig) {
     exiting = true;
 }
@@ -30,69 +36,69 @@ int main(int argc, char **argv) {
     struct bpf_map *map = NULL;
     int err;
 
-    // 1. Configura Logs e Sinais
+    // 1. Setup logging and signal handling
     libbpf_set_print(libbpf_print_fn);
     signal(SIGINT, sig_handler);
     signal(SIGTERM, sig_handler);
 
-    // 2. Abre o arquivo BPF (O seu .o compilado)
-    printf("--- Abrindo %s ---\n", BPF_OBJ_PATH);
+    // 2. Open the BPF Object file
+    printf("--- Opening %s ---\n", BPF_OBJ_PATH);
     obj = bpf_object__open(BPF_OBJ_PATH);
     if (!obj) {
-        fprintf(stderr, "ERRO: Falha ao abrir objeto BPF\n");
+        fprintf(stderr, "ERROR: Failed to open BPF object\n");
         return 1;
     }
 
-    // 3. Carrega no Kernel (Verifier checa o código aqui)
-    printf("--- Carregando no Kernel ---\n");
+    // 3. Load into the Kernel (Verifier Check)
+    printf("--- Loading into Kernel ---\n");
     err = bpf_object__load(obj);
     if (err) {
-        fprintf(stderr, "ERRO: Falha ao carregar (Verifique logs acima)\n");
+        fprintf(stderr, "ERROR: Failed to load BPF object (Check logs above)\n");
         goto cleanup;
     }
 
-    // 4. Pina o Mapa para o Go usar
-    // Primeiro, limpamos qualquer pin antigo
+    // 4. Pin the BPF Map for the User-Space Agent
+    // Unlink any existing pin to ensure a fresh start
     unlink(PIN_PATH);
 
     map = bpf_object__find_map_by_name(obj, MAP_NAME);
     if (!map) {
-        fprintf(stderr, "ERRO: Mapa '%s' nao encontrado!\n", MAP_NAME);
+        fprintf(stderr, "ERROR: Map '%s' not found in BPF object!\n", MAP_NAME);
         goto cleanup;
     }
 
-    printf("--- Pinando mapa em %s ---\n", PIN_PATH);
+    printf("--- Pinning map to %s ---\n", PIN_PATH);
     err = bpf_map__pin(map, PIN_PATH);
     if (err) {
-        fprintf(stderr, "ERRO: Falha ao pinar mapa: %s\n", strerror(errno));
+        fprintf(stderr, "ERROR: Failed to pin map: %s\n", strerror(errno));
         goto cleanup;
     }
 
-    // 5. Ativa o Escalonador (Attach Struct Ops)
+    // 5. Activate the Scheduler (Attach Struct Ops)
     map = bpf_object__find_map_by_name(obj, OPS_NAME);
     if (!map) {
-        fprintf(stderr, "ERRO: Struct Ops '%s' nao encontrada!\n", OPS_NAME);
+        fprintf(stderr, "ERROR: Struct Ops '%s' not found!\n", OPS_NAME);
         goto cleanup;
     }
 
-    printf("--- ATIVANDO SCHED_EXT ---\n");
+    printf("--- ACTIVATING SCHED_EXT ---\n");
     link = bpf_map__attach_struct_ops(map);
     if (!link) {
-        fprintf(stderr, "ERRO: Falha ao anexar scheduler. Kernel suporta SCX? Erro: %s\n", strerror(errno));
+        fprintf(stderr, "ERROR: Failed to attach scheduler. Kernel supports SCX? Error: %s\n", strerror(errno));
         goto cleanup;
     }
 
-    printf("\n>>> SUCESSO! SEU ESCALONADOR ESTA RODANDO! <<<\n");
-    printf("Use Ctrl+C para encerrar e voltar ao CFS.\n");
+    printf("\n>>> SUCCESS! VANGUARD SCHEDULER IS RUNNING! <<<\n");
+    printf("Press Ctrl+C to stop and revert to CFS.\n");
 
-    // Loop para manter o programa vivo
+    // Keep the process alive to maintain the scheduler active
     while (!exiting) {
         sleep(1);
     }
 
 cleanup:
-    printf("\n--- Limpando e Saindo ---\n");
-    // Despina o mapa para não deixar lixo
+    printf("\n--- Cleaning up and Exiting ---\n");
+    // Unpin the map to avoid stale references
     unlink(PIN_PATH);
     if (link) bpf_link__destroy(link);
     if (obj) bpf_object__close(obj);

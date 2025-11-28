@@ -48,6 +48,10 @@ This repository is organized as follows:
 
     - **benchmark/**: Python automation scripts for memtier_benchmark.
 
+## 🎞️ Setup and Running
+
+For complete instructions, check [our writeup](https://github.com/patos-ufscar/Hackathon-eBPF-2025/blob/main/writeups/setup_environment.md)
+
 ---
 
 ## Who We Are
@@ -61,6 +65,8 @@ Our team for this Hackathon consisted of 3 members of PATOS.
 * [Oliver Miyar Ugarte](linkedin.com/in/oliver-miyar-ugarte-053580367)
 
 ![Team Members](https://github.com/patos-ufscar/Hackathon-eBPF-2025/blob/main/images/theTeam.jpeg)
+
+We had no practical experience working with eBPF or sched_ext, so this Hackathon was a great learning opportunity!
 
 ## Contribution
 We welcome contributions from the community! If you'd like to contribute, feel free to submit a pull request.

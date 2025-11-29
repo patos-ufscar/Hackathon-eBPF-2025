@@ -78,7 +78,7 @@ static __always_inline struct task_ctx *lookup_task_ctx(struct task_struct *p)
  * Current policy: Simply returns @prev_cpu. This is not a true
  * cache-affinity policy, but in practice it can preserve some locality.
  */
-s32 BPF_STRUCT_OPS(kube_select_cpu, struct task_struct *p, s32 prev_cpu, u64 wake_flags)
+s32 BPF_STRUCT_OPS(mus_select_cpu, struct task_struct *p, s32 prev_cpu, u64 wake_flags)
 {
     return prev_cpu;
 }
@@ -87,7 +87,7 @@ s32 BPF_STRUCT_OPS(kube_select_cpu, struct task_struct *p, s32 prev_cpu, u64 wak
  * Places the task into the global SHARED_DSQ_ID.
  * The task is ordered within the DSQ based on its vruntime (p->scx.dsq_vtime).
  */
-void BPF_STRUCT_OPS(kube_enqueue, struct task_struct *p, u64 enq_flags)
+void BPF_STRUCT_OPS(mus_enqueue, struct task_struct *p, u64 enq_flags)
 {
     scx_bpf_dsq_insert_vtime(p, SHARED_DSQ_ID, slice_ns, p->scx.dsq_vtime, 0);
 }
@@ -96,7 +96,7 @@ void BPF_STRUCT_OPS(kube_enqueue, struct task_struct *p, u64 enq_flags)
  * Attempts to consume a task from the global SHARED_DSQ_ID and move it
  * to the local DSQ for immediate execution.
  */
-void BPF_STRUCT_OPS(kube_dispatch, s32 cpu, struct task_struct *prev)
+void BPF_STRUCT_OPS(mus_dispatch, s32 cpu, struct task_struct *prev)
 {
     scx_bpf_dsq_move_to_local(SHARED_DSQ_ID);
 }
@@ -105,7 +105,7 @@ void BPF_STRUCT_OPS(kube_dispatch, s32 cpu, struct task_struct *prev)
  * Records the start timestamp to calculate wall-clock execution time later.
  * Updates the global monotonic vtime if the task's vtime is ahead.
  */
-void BPF_STRUCT_OPS(kube_running, struct task_struct *p)
+void BPF_STRUCT_OPS(mus_running, struct task_struct *p)
 {
     struct task_ctx *tctx = lookup_task_ctx(p);
     if (!tctx) return;
@@ -123,7 +123,7 @@ void BPF_STRUCT_OPS(kube_running, struct task_struct *p)
  * conceptually similar to CFS weighting, but implemented with a simpler
  * vtime model.
  */
-void BPF_STRUCT_OPS(kube_stopping, struct task_struct *p, bool runnable)
+void BPF_STRUCT_OPS(mus_stopping, struct task_struct *p, bool runnable)
 {
     struct task_ctx *tctx = lookup_task_ctx(p);
     if (!tctx) return;
@@ -154,7 +154,7 @@ void BPF_STRUCT_OPS(kube_stopping, struct task_struct *p, bool runnable)
  * accumulating excessive credit and starving others upon waking.
  * Clamps the vtime to a maximum lag of one slice.
  */
-void BPF_STRUCT_OPS(kube_enable, struct task_struct *p)
+void BPF_STRUCT_OPS(mus_enable, struct task_struct *p)
 {
     if (p->scx.dsq_vtime < vtime_now - slice_ns)
         p->scx.dsq_vtime = vtime_now - slice_ns;
@@ -163,7 +163,7 @@ void BPF_STRUCT_OPS(kube_enable, struct task_struct *p)
 /*
  * Initializes global state and creates the shared dispatch queue.
  */
-s32 BPF_STRUCT_OPS_SLEEPABLE(kube_init)
+s32 BPF_STRUCT_OPS_SLEEPABLE(mus_init)
 {
     return scx_bpf_create_dsq(SHARED_DSQ_ID, -1);
 }
@@ -171,18 +171,18 @@ s32 BPF_STRUCT_OPS_SLEEPABLE(kube_init)
 /*
  * Dumps debug information if the scheduler exits abnormally.
  */
-void BPF_STRUCT_OPS(kube_exit, struct scx_exit_info *ei)
+void BPF_STRUCT_OPS(mus_exit, struct scx_exit_info *ei)
 {
 	UEI_RECORD(uei, ei);
 }
 
-SCX_OPS_DEFINE(kube_ops,
-    .select_cpu		= (void *)kube_select_cpu,
-    .enqueue		= (void *)kube_enqueue,
-    .dispatch		= (void *)kube_dispatch,
-    .running		= (void *)kube_running,
-    .stopping		= (void *)kube_stopping,
-    .enable			= (void *)kube_enable,
-    .init			= (void *)kube_init,
-    .exit			= (void *)kube_exit,
-    .name			= "kube");
+SCX_OPS_DEFINE(mus_ops,
+    .select_cpu		= (void *)mus_select_cpu,
+    .enqueue		= (void *)mus_enqueue,
+    .dispatch		= (void *)mus_dispatch,
+    .running		= (void *)mus_running,
+    .stopping		= (void *)mus_stopping,
+    .enable			= (void *)mus_enable,
+    .init			= (void *)mus_init,
+    .exit			= (void *)mus_exit,
+    .name			= "mus");

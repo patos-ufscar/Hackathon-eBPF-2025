@@ -8,5 +8,5 @@ For those purposes, we utilized the [client-go](https://github.com/kubernetes/cl
 
 The program will interact with the Kubernetes client inside the current node to retrieve a list of all currently running containers. Then it will prompt the user to select which container they want to prioritize using the scheduler. After the user selects one, it will retrieve the cgroup ID tied to the container and save it to the BPF map.
 
-![program queries user to choose a container](userspace1.png)
-![information printed after container cgroup ID is successfully saved to the BPF map](userspace2.png)
+![program queries user to choose a container](https://github.com/patos-ufscar/Hackathon-eBPF-2025/blob/main/images/userspace1.png)
+![information printed after container cgroup ID is successfully saved to the BPF map](https://github.com/patos-ufscar/Hackathon-eBPF-2025/blob/main/images/userspace2.png)

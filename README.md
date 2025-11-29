@@ -58,6 +58,10 @@ This repository is organized as follows:
 For complete instructions, check [our writeup](https://github.com/patos-ufscar/Hackathon-eBPF-2025/blob/main/writeups/setup_environment.md)
 Then to run the benchmarks, check [the guide](https://github.com/patos-ufscar/Hackathon-eBPF-2025/blob/main/writeups/benchmark_guide.md)
 
+# Analysis and Performance of SCX_MUS
+
+If you wish to know the overall performance go to [evaluation/scheduler_analysis.ipynb](./evaluation/scheduler_analysis.ipynb).
+
 ---
 
 ## Who We Are

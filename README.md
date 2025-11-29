@@ -56,6 +56,7 @@ This repository is organized as follows:
 ## 🎞️ Setup and Running
 
 For complete instructions, check [our writeup](https://github.com/patos-ufscar/Hackathon-eBPF-2025/blob/main/writeups/setup_environment.md)
+Then to run the benchmarks, check [the guide](https://github.com/patos-ufscar/Hackathon-eBPF-2025/blob/main/writeups/benchmark_guide.md)
 
 ---
 

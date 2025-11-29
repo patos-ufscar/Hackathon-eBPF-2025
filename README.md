@@ -31,7 +31,7 @@ The system consists of three main components:
 
 -   Benchmarks: `benchmark.py` repeatedly runs `memtier_benchmark` against the Redis exposed NodePort (30001), capturing `ops/sec` and percentile latencies into CSVs, We run the scripts twice, once under vanilla CFS and once with SCX_MUS active, to quantify how much the prioritized Redis pod's latency improves while noise is present.
 
-![Diagram V1](images/diagramV1.png)
+![Diagram V2](images/diagramV2.png)
 
 ## 📂 Project Structure
 

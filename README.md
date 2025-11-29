@@ -8,14 +8,11 @@ placeholder
 
 ## 📖 Context and Objective
 
-The idea for this project came while we were studying how cgroups enforce CPU quotas and the functioning of Linux schedulers. Existing schedulers treat all containers equally even when latency-sensitive tasks need some extra headroom. Since cgroups have stable IDs, we thought we could make a scheduler that will prioritize a chosen container using it's cgroup ID. By feeding a chosen container's cgroup ID into our sched_ext scheduler via a BPF map, we can nudge the kernel to prioritize critical pods.
+The idea for this project started casually at a bar table. Our group, patos, all computer science students, was gathered when a friend showed us the new Linux scheduling technology, *sched_ext* and how it was being used to improve performances of games, for example. We were fascinated, but it felt unrealistic for students to build a scheduler from scratch.
 
-So we defined our main objectives:
+Months later, during a discussion about Kubernetes CPU management, specifically why `cpu.limits` is often discouraged and why `cpu.shares` is generally preferred, we began exploring how computational resources are allocated to containers. This led to a question: Is it possible to dynamically give more compute resources to a container, beyond the usual horizontal scaling or static allocation in manifests?
 
--   Build the sched_ext scheduler. Initially, as a proof of concept, we will receive one cgroup ID from the user-space agent and use it to prioritize the chosen container.
--   Simultaneously, build the user-space agent to easily allow the user to choose which container they wish to prioritize.
--   Figure out how to set up a reproducible environment for us to test this project during it's development
--   Create a solid methodology to measure latency and performance before and after using our scheduler
+The idea was born: to attempt giving a container higher priority via a custom scheduler.
 
 ## 🧰 How It Works
 
@@ -56,19 +53,60 @@ This repository is organized as follows:
 ## 🎞️ Setup and Running
 
 For complete instructions, check [our writeup](https://github.com/patos-ufscar/Hackathon-eBPF-2025/blob/main/writeups/setup_environment.md)
-Then to run the benchmarks, check [the guide](https://github.com/patos-ufscar/Hackathon-eBPF-2025/blob/main/writeups/benchmark_guide.md)
 
-# Analysis and Performance of SCX_MUS
+To run the benchmarks, check [the guide](https://github.com/patos-ufscar/Hackathon-eBPF-2025/blob/main/writeups/benchmark_guide.md)
+
+## 📊 Analysis and Performance of SCX_MUS
 
 If you wish to know the overall performance go to [evaluation/scheduler_analysis.ipynb](./evaluation/scheduler_analysis.ipynb).
 
+## Challenges we Ran Into
+
+One of the hardest parts was figuring out how to implement and run a scheduler using sched_ext_ops. There is very little documentation or guides online on how to load and execute your own custom scheduler, only examples of people running pre-made schedulers included with SCX.
+
+Another challenge was our initial workflow: we wrote most of the code without compiling or testing it (a terrible practice, we know). Only after reaching a reasonable implementation did we start the work of compiling the kernel with sched_ext support, setting up Kubernetes clusters and designing the benchmark.
+
+The debugging phase involved days of solving compilation mysteries, and unexpected behaviors before everything finally worked.
+
+## 😁 Accomplishments That We Are Proud Of
+
+The goal of our custom scheduler, wasn't to critique the Completely Fair Scheduler (CFS), our scheduler is, in fact, a highly simplified version of CFS. Instead, it was a two-fold endeavor:
+
+1. To see if students could successfully implement a scheduler from scratch.
+
+2. To explore different approaches to container scalability by dynamically adjusting a container's priority/resource share via a custom scheduler.
+
+We consider the project a success in demonstrating both of these concepts.
+
+## 🧠 What we learned
+
+We learned about:
+
+- The Linux scheduler architecture and its multiple scheduling classes
+
+- Kernel internals and low-level scheduling paths
+
+- Kubernetes resource management and API communication
+
+- eBPF development and the sched_ext subsystem
+
+- Performance evaluation, benchmarking, and debugging complex systems
+
+## 🚀 What's next for SCX_MUS
+
+- Building a more sophisticated control mechanism that uses the Kubernetes API to gather metrics and automatically adjust the container's priority share based on workload (e.g. implementing a hook that prioritize a container when its netns be with a X quantity of packets)
+
+- Refining SCX_MUS by:
+    - Adding multi DSQs for multi-cores enviroments
+    - Developing more sophisticated migration heuristics and improving L2/L3 cache locality
+
 ---
 
-## Who We Are
+## 🦆🦆 Who We Are 🦆🦆
 
 [PATOS](https://patos.dev/) is an open source group that focuses on giving talks and contributing to the open source community.
 
-## Team Members
+## 🧑‍💻 Team Members
 
 Our team for this Hackathon consisted of 3 members of PATOS.
 

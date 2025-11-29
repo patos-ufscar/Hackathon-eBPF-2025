@@ -70,6 +70,9 @@ sudo kubectl apply -f ~/Hackathon-eBPF-2025/manifests/stress-noise.yaml
 8. Compile and execute runner.c:
 ```sh
 gcc runner.c -o runner -lbpf
+
+# Run the scheduler loader
+./runner
 ```
 
 9. In other tab, build and run main.go (userspace code):

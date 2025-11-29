@@ -23,10 +23,10 @@ import (
 // BPF map to store cgroup IDs that will be prioritized.
 // Kernelspace code expects a map keyed by the cgroup ID (u64).
 // For testing you can create a map with 8-byte key and value, for example:
-// sudo bpftool map create /sys/fs/bpf/priority_pids type hash key 8 value 8 entries 1024 name priority_pids
-// sudo bpftool map dump pinned /sys/fs/bpf/priority_pids
+// sudo bpftool map create /sys/fs/bpf/high_prio_cgroups type hash key 8 value 8 entries 1024 name high_prio_cgroups
+// sudo bpftool map dump pinned /sys/fs/bpf/high_prio_cgroups
 // Note: the kernel BPF program in `bpf/main.bpf.c` looks up the map by cgroup id.
-const bpfMapPath = "/sys/fs/bpf/priority_pids"
+const bpfMapPath = "/sys/fs/bpf/high_prio_cgroups"
 
 const containerdSocket = "/run/k3s/containerd/containerd.sock"
 

@@ -60,7 +60,7 @@ clang -O2 -g -target bpf -D__TARGET_ARCH_x86 \
 ```
 
 7. Configure Kubernetes
-- For this step, we used k3s, a lighweight Kubernetes
+- For this step, we used k3s, a lighweight Kubernetes cluster setup
 ```sh
 curl -sfL https://get.k3s.io | sh -
 sudo kubectl apply -f ~/Hackathon-eBPF-2025/manifests/redis.yaml

@@ -53,13 +53,14 @@ This repository is organized as follows:
 ## 🎞️ Setup and Running
 
 For complete instructions, check [our writeup](https://github.com/patos-ufscar/Hackathon-eBPF-2025/blob/main/writeups/setup_environment.md)
-Then to run the benchmarks, check [the guide](https://github.com/patos-ufscar/Hackathon-eBPF-2025/blob/main/writeups/benchmark_guide.md)
 
-## Analysis and Performance of SCX_MUS
+To run the benchmarks, check [the guide](https://github.com/patos-ufscar/Hackathon-eBPF-2025/blob/main/writeups/benchmark_guide.md)
+
+## 📊 Analysis and Performance of SCX_MUS
 
 If you wish to know the overall performance go to [evaluation/scheduler_analysis.ipynb](./evaluation/scheduler_analysis.ipynb).
 
-## Challenges we ran into
+## Challenges we Ran Into
 
 One of the hardest parts was figuring out how to implement and run a scheduler using sched_ext_ops. There is very little documentation or guides online on how to load and execute your own custom scheduler, only examples of people running pre-made schedulers included with SCX.
 
@@ -67,7 +68,7 @@ Another challenge was our initial workflow: we wrote most of the code without co
 
 The debugging phase involved days of solving compilation mysteries, and unexpected behaviors before everything finally worked.
 
-## Accomplishments that we're proud of
+## 😁 Accomplishments That We Are Proud Of
 
 The goal of our custom scheduler, wasn't to critique the Completely Fair Scheduler (CFS), our scheduler is, in fact, a highly simplified version of CFS. Instead, it was a two-fold endeavor:
 
@@ -77,7 +78,7 @@ The goal of our custom scheduler, wasn't to critique the Completely Fair Schedul
 
 We consider the project a success in demonstrating both of these concepts.
 
-## What we learned
+## 🧠 What we learned
 
 We learned about:
 
@@ -91,7 +92,7 @@ We learned about:
 
 - Performance evaluation, benchmarking, and debugging complex systems
 
-## What's next for SCX_MUS
+## 🚀 What's next for SCX_MUS
 
 - Building a more sophisticated control mechanism that uses the Kubernetes API to gather metrics and automatically adjust the container's priority share based on workload (e.g. implementing a hook that prioritize a container when its netns be with a X quantity of packets)
 
@@ -101,11 +102,11 @@ We learned about:
 
 ---
 
-## Who We Are
+## 🦆🦆 Who We Are 🦆🦆
 
 [PATOS](https://patos.dev/) is an open source group that focuses on giving talks and contributing to the open source community.
 
-## Team Members
+## 🧑‍💻 Team Members
 
 Our team for this Hackathon consisted of 3 members of PATOS.
 

@@ -71,6 +71,7 @@ Our team for this Hackathon consisted of 3 members of PATOS.
 -   [Luiz Otávio](https://linkedin.com/in/luiz-mello-1117b4280)
 -   [Lucas Cardoso](https://linkedin.com/in/lucasac004)
 -   [Oliver Miyar Ugarte](https://linkedin.com/in/oliver-miyar-ugarte-053580367)
+-   [Rodrigo Coffani](https://www.linkedin.com/in/rcoff)
 
 ![Team Members](https://github.com/patos-ufscar/Hackathon-eBPF-2025/blob/main/images/theTeam.jpeg)
 

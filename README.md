@@ -67,9 +67,9 @@ For complete instructions, check [our writeup](https://github.com/patos-ufscar/H
 
 Our team for this Hackathon consisted of 3 members of PATOS.
 
--   [Luiz Otávio](linkedin.com/in/luiz-mello-1117b4280)
--   [Lucas Cardoso](www.linkedin.com/in/lucasac004)
--   [Oliver Miyar Ugarte](linkedin.com/in/oliver-miyar-ugarte-053580367)
+-   [Luiz Otávio](https://linkedin.com/in/luiz-mello-1117b4280)
+-   [Lucas Cardoso](https://linkedin.com/in/lucasac004)
+-   [Oliver Miyar Ugarte](https://linkedin.com/in/oliver-miyar-ugarte-053580367)
 
 ![Team Members](https://github.com/patos-ufscar/Hackathon-eBPF-2025/blob/main/images/theTeam.jpeg)
 

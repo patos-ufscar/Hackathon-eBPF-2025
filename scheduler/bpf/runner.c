@@ -8,9 +8,9 @@
 #include <bpf/bpf.h>
 
 // CONFIGURAÇÕES
-#define BPF_OBJ_PATH "kube_sched.bpf.o"
+#define BPF_OBJ_PATH "scx_mus.bpf.o"
 #define MAP_NAME "high_prio_cgroups"
-#define OPS_NAME "kube_ops"
+#define OPS_NAME "mus_ops"
 #define PIN_PATH "/sys/fs/bpf/high_prio_cgroups"
 
 static volatile bool exiting = false;
@@ -97,7 +97,7 @@ int main(int argc, char **argv)
         goto cleanup;
     }
 
-    printf("\n>>> SUCCESS! VANGUARD SCHEDULER IS RUNNING! <<<\n");
+    printf("\n>>> SUCCESS! SCX_MUS IS RUNNING! <<<\n");
     printf("Press Ctrl+C to stop and revert to CFS.\n");
 
     // Keep the process alive to maintain the scheduler active

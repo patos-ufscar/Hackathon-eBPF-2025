@@ -66,7 +66,7 @@ If you wish to know the overall performance go to [evaluation/scheduler_analysis
 
 ## Who We Are
 
-[PATOS](https://patos.dev/) is an open source group based in Brazil @ UFSCar (Universidade Federal de São Carlos) that focuses on giving talks and contributing to the open source community.
+[PATOS](https://patos.dev/) is an open source group that focuses on giving talks and contributing to the open source community.
 
 ## Team Members
 

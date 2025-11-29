@@ -4,7 +4,7 @@ SCX_MUS, or _Mostly Unfair Scheduler_, is a custom Linux scheduler built with th
 
 # Demo Video
 
-placeholder
+[Video](https://youtu.be/3Z7UYZ7sJTU)
 
 ## 📖 Context and Objective
 
